@@ -5,13 +5,15 @@
 */
 
 function isAnagram(str1, str2) {
-  if (!str1 && !str2) return false;
+  if (!str1 && !str2) return true;
 
   if (!str1 || !str2) return false;
 
   if (typeof str1 !== "string" || typeof str2 !== "string") return false;
 
   if (str1.length !== str2.length) return false;
+
+  if(str1 === str2) return true
 
   const str1Map = createMap(str1.toLowerCase());
   const str2Map = createMap(str2.toLowerCase());
@@ -46,5 +48,4 @@ const compareMaps = (map1, map2) => {
   return result;
 };
 // we hasve to find same count of strings
-isAnagram("Dhruv", "DhuVr");
 module.exports = isAnagram;
