@@ -4,7 +4,18 @@
 */
 
 function isPalindrome(str) {
-  return true;
+  const stringWithoutSpaces = removeSpacesAndSpecialCharacters(str.toLowerCase())
+  return stringWithoutSpaces === stringWithoutSpaces.split("").reverse().join("");
 }
+
+const removeSpacesAndSpecialCharacters = (string) => {
+  const stringArr = string.split("").filter((alphabet) => (alphabet !== " " && isLowercaseAlphabet(alphabet.charCodeAt(0)) ))
+  return stringArr.join("")
+}
+
+const isLowercaseAlphabet = (charCode) => ( charCode >= 97 && charCode <= 122)
+
+
+isPalindrome("A man, a plan, a canal. Panama")
 
 module.exports = isPalindrome;
