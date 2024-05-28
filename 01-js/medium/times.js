@@ -9,5 +9,18 @@ There is no automated test for this one, this is more for you to understand time
 */
 
 function calculateTime(n) {
-    return 0.01;
+    const startTime = Date.now();
+   let i = 1;
+   let sum = 1
+    while(i <= n){
+     sum += i;
+     i++
+    }
+
+    const endTime = Date.now();
+    return (parseFloat((endTime - startTime) / 1000)).toFixed(3)
 }
+// console.log(calculateTime(100000000)) // 0.130 sec
+// console.log(calculateTime(1000000000)) // 0.951 sec
+// console.log(calculateTime(10000000000)) // 10.152 sec
+// console.log(calculateTime(100000000000)) // 108.003 sec
