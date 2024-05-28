@@ -46,5 +46,4 @@ const compareMaps = (map1, map2) => {
   return result;
 };
 // we hasve to find same count of strings
-isAnagram("Dhruv", "DhuVr");
 module.exports = isAnagram;
