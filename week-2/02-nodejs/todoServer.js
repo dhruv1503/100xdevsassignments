@@ -39,11 +39,117 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-  const express = require('express');
-  const bodyParser = require('body-parser');
-  
-  const app = express();
-  
-  app.use(bodyParser.json());
-  
-  module.exports = app;
+const express = require("express");
+const bodyParser = require("body-parser");
+let todo = require("./todos.json");
+const uuid = require("uuid");
+
+const app = express();
+
+app.use(bodyParser.json());
+
+// GET /todos/:id - Retrieve a specific todo item by ID
+//   Description: Returns a specific todo item identified by its ID.
+//   Response: 200 OK with the todo item in JSON format if found, or 404 Not Found if not found.
+//   Example: GET http://localhost:3000/todos/123
+app.get("/todos/:id", (request, response) => {
+  const { id } = request.params;
+  const taskById = todo.find((task) => task.id === id);
+  if (taskById) {
+    response.status(200).json(taskById);
+  } else {
+    response.status(404).json({ message: "Required resource not found." });
+  }
+});
+
+// 1.GET /todos - Retrieve all todo items
+//   Description: Returns a list of all todo items.
+//   Response: 200 OK with an array of todo items in JSON format.
+//   Example: GET http://localhost:3000/todos
+
+app.get("/todos", (request, response) => {
+  response.status(200).json(todo);
+});
+// POST /todos - Create a new todo item
+// Description: Creates a new todo item.
+// Request Body: JSON object representing the todo item.
+// Response: 201 Created with the ID of the created todo item in JSON format. eg: {id: 1}
+// Example: POST http://localhost:3000/todos
+// Request Body: { "title": "Buy groceries", "completed": false, description: "I should buy groceries" }
+
+app.post("/todos", (request, response) => {
+  const { title, completed, description } = request.body;
+  if (!title.toString().trim()) {
+    response.status(400).json({ message: "Title not available" });
+  }
+
+  const id = uuid.v4();
+  todo.push({ id, title, completed, description });
+  response.status(201).json({ id });
+});
+
+// PUT /todos/:id - Update an existing todo item by ID
+//   Description: Updates an existing todo item identified by its ID.
+//   Request Body: JSON object representing the updated todo item.
+//   Response: 200 OK if the todo item was found and updated, or 404 Not Found if not found.
+//   Example: PUT http://localhost:3000/todos/123
+//   Request Body: { "title": "Buy groceries", "completed": true }
+
+app.put("/todos/:id", (request, response) => {
+  const { id } = request.params;
+  if (!id) {
+    return response.sendStatus(404);
+  }
+  const todoIndex = todo.findIndex((task) => (task.id === id));
+  if (todoIndex === -1) {
+    return response.sendStatus(404);
+  }
+  let selectedTask = todo[todoIndex];
+  if (request.body.title) {
+    selectedTask.title = request.body.title;
+  }
+  if (request.body.description) {
+    selectedTask.description = request.body.description;
+  }
+  if (request.body.completed) {
+    selectedTask.completed = request.body.completed;
+  }
+  todo = todo.map((task) => (task.id === id ? selectedTask : task));
+  response.sendStatus(200);
+});
+
+// DELETE /todos/:id - Delete a todo item by ID
+// Description: Deletes a todo item identified by its ID.
+// Response: 200 OK if the todo item was found and deleted, or 404 Not Found if not found.
+// Example: DELETE http://localhost:3000/todos/123
+
+// - For any other route not defined in the server return 404
+
+app.delete("/todos/:id", (request, response) => {
+  const { id } = request.params;
+
+  if (!id) {
+    return response.status(404).json({ error: "ID is required" });
+  }
+
+  const indexArray = todo.map((task) => task.id);
+
+  if (indexArray.indexOf(id) === -1) {
+    return response.status(404).json({ error: "Todo not found" });
+  }
+
+  todo = todo.filter((task) => task.id !== id);
+
+  return response.status(200).json({ message: "Todo deleted successfully" });
+});
+
+// app.listen(3000, (error) => {
+//   if(error){
+//     console.log(error)
+//   }
+//   else{
+//     console.log(`Server running on port 3000...`);
+//   }
+// })
+
+module.exports = app;
