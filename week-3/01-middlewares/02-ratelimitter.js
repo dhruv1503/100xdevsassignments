@@ -12,10 +12,25 @@ const app = express();
 // clears every one second
 
 let numberOfRequestsForUser = {};
+
 setInterval(() => {
     numberOfRequestsForUser = {};
 }, 1000)
 
+function increaseCount(request, response, next){
+  const userId = request.headers["user-id"];
+  if(numberOfRequestsForUser[`${userId}`]){
+    numberOfRequestsForUser[`${userId}`] += 1;
+  }
+  else{
+    numberOfRequestsForUser[`${userId}`] = 1;
+  }
+  if(numberOfRequestsForUser[`${userId}`] >= 5){
+    return response.sendStatus(404)
+  }
+  next()
+}
+app.use(increaseCount);
 app.get('/user', function(req, res) {
   res.status(200).json({ name: 'john' });
 });
