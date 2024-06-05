@@ -14,6 +14,7 @@ const jwtPassword = 'secret';
  *                        the password does not meet the length requirement.
  */
 function signJwt(username, password) {
+    
     // Your code here
 }
 
